@@ -46,6 +46,24 @@
             <p class="text-gray-400 mt-2">Enter your details to generate the heartbeat function.</p>
         </div>
 
+        <div class="mb-8 p-6 bg-gray-900 rounded-lg border border-gray-700 text-gray-300">
+            <h2 class="text-2xl font-bold text-white mb-4">How to Use</h2>
+            <ol class="list-decimal list-inside space-y-3">
+                <li>Enable Discord Developer Mode: Go to <code class="bg-gray-700 px-1 rounded">Settings > Advanced > Developer Mode</code> and turn it on.</li>
+                <li>Open Discord's Developer Tools by pressing <code class="bg-gray-700 px-1 rounded">Ctrl + Shift + I</code> (or <code class="bg-gray-700 px-1 rounded">Cmd + Option + I</code> on Mac).</li>
+                <li>Go to the "Network" tab in the developer tools. You might need to click the `>>` icon to find it.</li>
+                <li>Send a message in any Discord channel. A new request named "messages" will appear at the bottom of the network log. Click on it.</li>
+                <li>In the "Headers" tab for the "messages" request, scroll down to "Request Headers". Copy the values for <code class="bg-gray-700 px-1 rounded">authorization</code> and <code class="bg-gray-700 px-1 rounded">x-super-properties</code> and paste them into the respective fields below.</li>
+                <li>With Developer Mode on, you can easily get IDs:
+                    <ul class="list-disc list-inside ml-6 mt-1 space-y-1">
+                        <li>Right-click your own username and select "Copy User ID".</li>
+                        <li>Right-click the voice channel for the quest and select "Copy Channel ID".</li>
+                    </ul>
+                </li>
+                <li>Once all fields are filled, copy the generated code. In Discord's Developer Tools, go to the "Console" tab, paste the code, and press Enter. You should see your quest progress increase.</li>
+            </ol>
+        </div>
+
         <div id="form">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                  <div class="input-group">
@@ -62,7 +80,7 @@
                 </div>
                 <div class="input-group">
                     <label for="authorization">Authorization Header</label>
-                    <input type="password" id="authorization" placeholder="Your authorization token">
+                    <input type="text" id="authorization" placeholder="Your authorization token">
                 </div>
             </div>
              <div class="input-group">
@@ -185,8 +203,8 @@ setInterval(sendHeartbeat, 30000);`;
                 copyButton.classList.replace('hover:bg-green-700', 'hover:bg-indigo-700');
             }, 2000);
         });
-        
-        // Initial call to populate the code block
+
+        // Initial code generation
         generateCode();
     </script>
 </body>
