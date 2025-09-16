@@ -49,9 +49,12 @@
         <div class="mb-8 p-6 bg-gray-900 rounded-lg border border-gray-700 text-gray-300">
             <h2 class="text-2xl font-bold text-white mb-4">How to Use</h2>
             <ol class="list-decimal list-inside space-y-3">
-                <li>Copy the Quest URL using the Share button for the quest you want to complete. The Share button is hidden under the 3 dots ⋯ menu on the quest's banner image.</li>
+                <li>Important! This must be done ONLY using the Discord desktop app. Discord checks if the requests are coming from.</li>
+                <li>Enable Discord Developer Tools: Go to <code class="bg-gray-700 px-1 rounded">%appdata%/discord/settings.json</code> and add <code class="bg-gray-700 px-1 rounded">"DANGEROUS_ENABLE_DEVTOOLS_ONLY_ENABLE_IF_YOU_KNOW_WHAT_YOURE_DOING": true,</code> on a new line under the first open bracket character <code class="bg-gray-700 px-1 rounded">{</code>.</li>
+                <li>Restart Discord.</li>
                 <li>Enable Discord Developer Mode: Go to <code class="bg-gray-700 px-1 rounded">Settings > Advanced > Developer Mode</code> and turn it on.</li>
-                <li>Open Discord's Developer Tools by pressing <code class="bg-gray-700 px-1 rounded">Ctrl + Shift + I</code> (or <code class="bg-gray-700 px-1 rounded">Cmd + Option + I</code> on Mac).</li>
+                <li>Copy the Quest URL using the Share button for the quest you want to complete. The Share button is hidden under the 3 dots ⋯ menu on the quest's banner image.</li>
+                <li>Open Discord's Developer Tools by pressing <code class="bg-gray-700 px-1 rounded">Ctrl + Shift + I</code>.</li>
                 <li>Go to the "Network" tab in the developer tools. You might need to click the `>>` icon to find it.</li>
                 <li>Send a message in any Discord channel. A new request named "messages" will appear at the bottom of the network log. Click on it.</li>
                 <li>In the "Headers" tab for the "messages" request, scroll down to "Request Headers". Copy the values for <code class="bg-gray-700 px-1 rounded">authorization</code> and <code class="bg-gray-700 px-1 rounded">x-super-properties</code> and paste them into the respective fields below.</li>
