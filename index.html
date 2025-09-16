@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Quest Heartbeat Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .input-group {
+            margin-bottom: 1rem;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #d1d5db; /* gray-300 */
+        }
+        .input-group input {
+            width: 100%;
+            background-color: #374151; /* gray-700 */
+            border: 1px solid #4b5563; /* gray-600 */
+            color: #f3f4f6; /* gray-100 */
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl bg-gray-800 p-8 rounded-2xl shadow-2xl border border-gray-700">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-white">Discord Quest Code Generator</h1>
+            <p class="text-gray-400 mt-2">Enter your details to generate the heartbeat function.</p>
+        </div>
+
+        <div id="form">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                 <div class="input-group">
+                    <label for="questId">Quest URL or ID</label>
+                    <input type="text" id="questId" placeholder="e.g., https://discord.com/quests/...">
+                </div>
+                <div class="input-group">
+                    <label for="voiceChannelId">Voice Channel ID</label>
+                    <input type="text" id="voiceChannelId" placeholder="e.g., 123456789012345678">
+                </div>
+                <div class="input-group">
+                    <label for="userId">User ID</label>
+                    <input type="text" id="userId" placeholder="e.g., 987654321098765432">
+                </div>
+                <div class="input-group">
+                    <label for="authorization">Authorization Header</label>
+                    <input type="password" id="authorization" placeholder="Your authorization token">
+                </div>
+            </div>
+             <div class="input-group">
+                <label for="xSuperProperties">X-Super-Properties Header</label>
+                <input type="text" id="xSuperProperties" placeholder="Base64 encoded properties string">
+            </div>
+        </div>
+        
+        <div class="mt-8">
+            <div class="flex justify-between items-center mb-2">
+                <label class="text-lg font-semibold text-white">Generated JavaScript Code</label>
+                <button id="copyButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    Copy Code
+                </button>
+            </div>
+            <pre class="bg-gray-900 p-4 rounded-lg border border-gray-600 overflow-x-auto"><code id="codeOutput" class="language-javascript text-sm text-gray-300"></code></pre>
+        </div>
+
+    </div>
+
+    <script>
+        const questIdInput = document.getElementById('questId');
+        const authorizationInput = document.getElementById('authorization');
+        const xSuperPropertiesInput = document.getElementById('xSuperProperties');
+        const voiceChannelIdInput = document.getElementById('voiceChannelId');
+        const userIdInput = document.getElementById('userId');
+        
+        const copyButton = document.getElementById('copyButton');
+        const codeOutput = document.getElementById('codeOutput');
+
+        function generateCode() {
+            let questIdValue = questIdInput.value.trim();
+            
+            // Check if the input is a URL or path and try to extract the ID from it
+            if (questIdValue.includes('/')) {
+                const parts = questIdValue.split('/');
+                // Get the last non-empty part of the path, which should be the ID
+                const potentialId = parts.pop() || parts.pop(); // Handles optional trailing slash
+                if (potentialId) {
+                     questIdValue = potentialId;
+                }
+            }
+
+            const questId = questIdValue || '{quest_ID}';
+            const authorization = authorizationInput.value.trim() || '{authorization_header}';
+            const xSuperProperties = xSuperPropertiesInput.value.trim() || '{x-super-properties_header}';
+            const voiceChannelId = voiceChannelIdInput.value.trim() || '{voice_channel_id}';
+            const userId = userIdInput.value.trim() || '{user_id}';
+
+            const codeString = `function sendHeartbeat() {
+  fetch("https://discord.com/api/v9/quests/${questId}/heartbeat", {
+    "headers": {
+      "authorization": "${authorization}",
+      "content-type": "application/json",
+      "x-super-properties": "${xSuperProperties}"
+    },
+    "body": '{"stream_key":"call:${voiceChannelId}:${userId}","terminal":false}',
+    "method": "POST",
+    "mode": "cors",
+    "credentials": "include"
+  })
+  .then(response => {
+    if(!response.ok) {
+      console.error('Heartbeat failed with status:', response.status);
+      return response.json().then(err => console.error('Error details:', err));
+    }
+    console.log('Heartbeat sent successfully!');
+    return response.json();
+  })
+  .then(data => console.log('Response data:', data))
+  .catch(error => {
+    console.error('Error sending heartbeat:', error);
+  });
+}
+
+// Sends once
+sendHeartbeat();
+
+// Sends every 30 seconds
+setInterval(sendHeartbeat, 30000);`;
+            
+            codeOutput.textContent = codeString;
+        }
+
+        const allInputs = [questIdInput, authorizationInput, xSuperPropertiesInput, voiceChannelIdInput, userIdInput];
+        allInputs.forEach(input => {
+            input.addEventListener('input', generateCode);
+        });
+
+        copyButton.addEventListener('click', () => {
+            const codeToCopy = codeOutput.textContent;
+            
+            // Using navigator.clipboard for a more modern approach
+            if (navigator.clipboard && window.isSecureContext) {
+                 navigator.clipboard.writeText(codeToCopy);
+            } else {
+                // Fallback for older browsers
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = codeToCopy;
+                tempTextArea.style.position = 'absolute';
+                tempTextArea.style.left = '-9999px';
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                }
+                document.body.removeChild(tempTextArea);
+            }
+
+
+            copyButton.textContent = 'Copied!';
+            copyButton.classList.replace('bg-indigo-600', 'bg-green-600');
+            copyButton.classList.replace('hover:bg-indigo-700', 'hover:bg-green-700');
+
+            setTimeout(() => {
+                copyButton.textContent = 'Copy Code';
+                copyButton.classList.replace('bg-green-600', 'bg-indigo-600');
+                copyButton.classList.replace('hover:bg-green-700', 'hover:bg-indigo-700');
+            }, 2000);
+        });
+        
+        // Initial call to populate the code block
+        generateCode();
+    </script>
+</body>
+</html>
