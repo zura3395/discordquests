@@ -115,6 +115,20 @@
         const copyButton = document.getElementById('copyButton');
         const codeOutput = document.getElementById('codeOutput');
 
+        function loadFromLocalStorage() {
+            voiceChannelIdInput.value = localStorage.getItem('dq_voiceChannelId') || '';
+            userIdInput.value = localStorage.getItem('dq_userId') || '';
+            authorizationInput.value = localStorage.getItem('dq_authorization') || '';
+            xSuperPropertiesInput.value = localStorage.getItem('dq_xSuperProperties') || '';
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('dq_voiceChannelId', voiceChannelIdInput.value.trim());
+            localStorage.setItem('dq_userId', userIdInput.value.trim());
+            localStorage.setItem('dq_authorization', authorizationInput.value.trim());
+            localStorage.setItem('dq_xSuperProperties', xSuperPropertiesInput.value.trim());
+        }
+
         function generateCode() {
             let questIdValue = questIdInput.value.trim();
             
@@ -171,7 +185,10 @@ setInterval(sendHeartbeat, 30000);`;
 
         const allInputs = [questIdInput, authorizationInput, xSuperPropertiesInput, voiceChannelIdInput, userIdInput];
         allInputs.forEach(input => {
-            input.addEventListener('input', generateCode);
+            input.addEventListener('input', () => {
+                generateCode();
+                saveToLocalStorage();
+            });
         });
 
         copyButton.addEventListener('click', () => {
@@ -208,7 +225,8 @@ setInterval(sendHeartbeat, 30000);`;
             }, 2000);
         });
 
-        // Initial code generation
+        // Initial setup
+        loadFromLocalStorage();
         generateCode();
     </script>
 </body>
