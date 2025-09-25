@@ -15,7 +15,7 @@ python -m pip install -r requirements.txt
 
 ## Usage
 
-Run the script and follow the prompts. Each required value can fall back to the corresponding `DQ_*` environment variable if you press Enter without typing anything.
+Run the script and follow the prompts.
 
 Required inputs:
 
@@ -26,7 +26,7 @@ Required inputs:
 - X-Super-Properties header (hidden input)
 
 You can pre-populate defaults with environment variables using an `.env` file.
-Create a file with the contents:
+Create a file with the contents in the cloned directory:
 
 ```py
 DQ_VOICE_CHANNEL_ID=numbers
