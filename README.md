@@ -15,15 +15,16 @@ python -m pip install -r requirements.txt
 
 ## Usage
 
-Run the script and follow the prompts.
+Before running the script, open and login to Discord on your web browser and do the following to get the required inputs:
 
-Required inputs:
-
-- Quest ID or URL
-- Voice Channel ID
-- User ID
-- Authorization header
-- X-Super-Properties header
+- Enable Discord Developer Mode if you have not enabled it before: Go to `Settings > Advanced > Developer Mode` and turn it on.
+- **Quest URL**: Accept the quest, select that you will be completing the quest on Desktop if needed. Copy the Quest URL using the Share button for the quest you want to complete. The Share button is hidden under the 3 dots ⋯ menu on the quest's banner image.
+- **User ID**: Click your own username in the bottom left and select "Copy User ID".
+- **Channel ID** Right-click the voice channel in any server for the quest and select "Copy Channel ID". You don't need to be in the voice channel.
+- Open your browser's developer tools by pressing `F12`.
+- Go to the "Network" tab in the developer tools.
+- Send a message in any Discord channel. A new request named "messages" will appear at the bottom of the network log. Click on it.
+- **Headers**: In the "Headers" tab for the "messages" request, scroll down to "Request Headers". Copy the values for `Authorization` and `X-Super-Properties` and paste them into the respective fields below.
 
 You can pre-populate defaults with environment variables using an `.env` file.
 Create a file with the contents in the cloned directory:
@@ -34,6 +35,10 @@ DQ_USER_ID=numbers
 DQ_AUTHORIZATION="content"
 DQ_X_SUPER_PROPERTIES="content"
 ```
+
+Make sure to include quotation marks around the Authorization and X-Super-Properties headers to avoid issues with non-alphnumeric characters.
+
+Run the script and follow the prompts. The script will skip user input for a given variable if an environment variable is available.
 
 The script sets the User-Agent to:
 

@@ -151,7 +151,11 @@ def main() -> int:
     session = requests.Session()
     session.headers.update(headers)
 
+    # Flag to indicate the loop should stop (set when completed_at is non-null)
+    should_stop = False
+
     def do_send():
+        nonlocal should_stop
         status, j, t = send_heartbeat_once(session, url, body)
         if status == 0:
             print(f"[{now()}] Heartbeat error: {t}")
@@ -160,29 +164,41 @@ def main() -> int:
             print(f"[{now()}] Heartbeat OK (status {status}).")
         else:
             print(f"[{now()}] Heartbeat failed (status {status}).")
-        # Print a compact response preview
+        # Print the full response (JSON or text)
         if j is not None:
             try:
                 import json as _json
-
-                snippet = _json.dumps(j)[:500]
+                pretty = _json.dumps(j, indent=2, ensure_ascii=False)
             except Exception:
-                snippet = str(j)[:500]
-            print(f"[{now()}] Response JSON: {snippet}")
+                pretty = str(j)
+            print(f"[{now()}] Response JSON:\n{pretty}")
+
+            # Stop the loop if the response indicates completion.
+            completed = None
+            if isinstance(j, dict):
+                completed = j.get("completed_at")
+                if completed is None and isinstance(j.get("data"), dict):
+                    completed = j["data"].get("completed_at")
+            if completed is not None:
+                print(f"[{now()}] Detected completed_at = {completed!s}. Stopping heartbeat loop.")
+                should_stop = True
         elif t:
-            snippet = t.replace("\n", " ")[:500]
-            print(f"[{now()}] Response text: {snippet}")
+            print(f"[{now()}] Response text:\n{t}")
         return 200 <= status < 300
 
     print(f"Starting heartbeat loop for quest {quest_id} every {interval} seconds. Press Ctrl+C to stop.")
     try:
         while True:
             do_send()
+            if should_stop:
+                break
             time.sleep(interval)
     except KeyboardInterrupt:
         print("\nStopped.")
         return 0
 
 
+if __name__ == "__main__":
+    sys.exit(main())
 if __name__ == "__main__":
     sys.exit(main())
