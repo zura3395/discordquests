@@ -22,8 +22,8 @@ Required inputs:
 - Quest ID or URL
 - Voice Channel ID
 - User ID
-- Authorization header (hidden input)
-- X-Super-Properties header (hidden input)
+- Authorization header
+- X-Super-Properties header
 
 You can pre-populate defaults with environment variables using an `.env` file.
 Create a file with the contents in the cloned directory:
