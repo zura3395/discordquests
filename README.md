@@ -13,9 +13,12 @@ Install dependencies:
 python -m pip install -r requirements.txt
 ```
 
+Might be `python3` or `py` depending on how you installed Python. :trollface:
+
 ## Usage
 
 ~~<https://www.reddit.com/r/github/comments/1at9br4/i_am_new_to_github_and_i_have_lots_to_say/>~~
+
 Clone the repo into a handy directory with `git clone https://github.com/zura3395/discordquests.git`.
 
 Before running the script, open and login to Discord on your web browser and do the following to get the required inputs:
@@ -41,7 +44,13 @@ DQ_X_SUPER_PROPERTIES="content"
 
 Make sure to include quotation marks around the Authorization and X-Super-Properties headers to avoid issues with non-alphnumeric characters.
 
-Run the script and follow the prompts. The script will skip user input for a given variable if an environment variable is available.
+Run the script:
+
+```bash
+python heartbeat.py
+```
+
+Follow the prompts. The script will skip user input for a given variable if an environment variable is available.
 
 The script sets the User-Agent to:
 
