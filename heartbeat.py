@@ -101,45 +101,7 @@ def prompt_value(label: str, env_key: str, *, required: bool = True, secret: boo
         print("This value is required. Please enter a value.")
 
 
-def prompt_interval(env_key: str, default: float = 30.0) -> float:
-    env_val = os.getenv(env_key)
-    if env_val:
-        try:
-            value = float(env_val)
-            if value <= 0:
-                raise ValueError
-            return max(0.5, value)
-        except ValueError:
-            print(f"Warning: environment variable {env_key}='{env_val}' is not a positive number. Using {default}.")
-            return max(0.5, default)
-
-    while True:
-        raw = input(f"Seconds between heartbeats [{default}]: ").strip()
-        if not raw:
-            return max(0.5, default)
-        try:
-            value = float(raw)
-            if value <= 0:
-                raise ValueError
-            return max(0.5, value)
-        except ValueError:
-            print("Please enter a positive number.")
-
-
-def prompt_yes_no(question: str, default: bool = False) -> bool:
-    suffix = " [Y/n]: " if default else " [y/N]: "
-    while True:
-        raw = input(question + suffix).strip().lower()
-        if not raw:
-            return default
-        if raw in {"y", "yes"}:
-            return True
-        if raw in {"n", "no"}:
-            return False
-        print("Please answer with 'y' or 'n'.")
-
-
-def gather_inputs() -> tuple[str, str, str, str, str, float, bool]:
+def gather_inputs() -> tuple[str, str, str, str, str]:
     print("Enter the details for your Discord quest heartbeat. Environment variables (DQ_*) will be used as defaults when available.\n")
 
     quest = prompt_value("Quest ID or URL", "DQ_QUEST_ID")
@@ -147,10 +109,8 @@ def gather_inputs() -> tuple[str, str, str, str, str, float, bool]:
     user_id = prompt_value("User ID", "DQ_USER_ID")
     authorization = prompt_value("Authorization header", "DQ_AUTHORIZATION", secret=True)
     x_super_properties = prompt_value("x-super-properties header", "DQ_X_SUPER_PROPERTIES", secret=True)
-    interval = prompt_interval("DQ_INTERVAL", default=30.0)
-    send_once = prompt_yes_no("Send only one heartbeat and exit?", default=False)
 
-    return quest, voice_channel_id, user_id, authorization, x_super_properties, interval, send_once
+    return quest, voice_channel_id, user_id, authorization, x_super_properties
 
 
 DEFAULT_ENV_FILE = ".env"
@@ -174,7 +134,10 @@ def load_env_file(path: str = DEFAULT_ENV_FILE) -> None:
 
 def main() -> int:
     load_env_file()
-    quest, voice_channel_id, user_id, authorization, x_super_properties, interval, send_once = gather_inputs()
+    quest, voice_channel_id, user_id, authorization, x_super_properties = gather_inputs()
+
+    # Fixed interval per user's request
+    interval = 30.0
 
     quest_id = extract_quest_id(quest)
     url = f"https://discord.com/api/v9/quests/{quest_id}/heartbeat"
@@ -211,17 +174,11 @@ def main() -> int:
             print(f"[{now()}] Response text: {snippet}")
         return 200 <= status < 300
 
-    if send_once:
-        ok = do_send()
-        return 0 if ok else 1
-
-    print(
-        f"Starting heartbeat loop for quest {quest_id} every {interval} seconds. Press Ctrl+C to stop."
-    )
+    print(f"Starting heartbeat loop for quest {quest_id} every {interval} seconds. Press Ctrl+C to stop.")
     try:
         while True:
             do_send()
-            time.sleep(max(0.5, interval))
+            time.sleep(interval)
     except KeyboardInterrupt:
         print("\nStopped.")
         return 0
